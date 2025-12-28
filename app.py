@@ -6,17 +6,29 @@ app.secret_key = 'ismail_123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shop.db'
 db = SQLAlchemy(app)
 
+# Database model with affiliate_link support
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     price = db.Column(db.Float)
     image_url = db.Column(db.String(200))
     description = db.Column(db.String(500))
+    affiliate_link = db.Column(db.String(500))
+
+# هاد السطر هو اللي كيصايب الجداول في Koyeb بلا ما يحتاج ملف .db خارجي
+with app.app_context():
+    db.create_all()
+
+# Initialize Shopping Cart in session
+@app.before_request
+def make_session_permanent():
+    if 'cart' not in session:
+        session['cart'] = []
 
 @app.route('/')
 def index():
     products = Product.query.all()
-    return render_template('index.html', products=products)
+    return render_template('index.html', products=products, title="Home")
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -28,14 +40,39 @@ def admin():
             name=request.form['name'],
             price=request.form['price'],
             image_url=request.form['image_url'],
-            description=request.form['description']
+            description=request.form['description'],
+            affiliate_link=request.form['affiliate_link']
         )
         db.session.add(new_p)
         db.session.commit()
         return redirect(url_for('admin', password="2025"))
         
     products = Product.query.all()
-    return render_template('admin.html', products=products)
+    return render_template('admin.html', products=products, title="Admin Panel")
+
+@app.route('/buy/<int:id>')
+def buy(id):
+    p = Product.query.get_or_404(id)
+    return render_template('buy.html', product=p, title=p.name)
+
+@app.route('/add_to_cart/<int:id>')
+def add_to_cart(id):
+    p = Product.query.get_or_404(id)
+    cart = session.get('cart', [])
+    cart.append({'id': p.id, 'name': p.name, 'price': p.price})
+    session['cart'] = cart
+    return redirect(url_for('index'))
+
+@app.route('/cart')
+def cart():
+    items = session.get('cart', [])
+    total = sum(item['price'] for item in items)
+    return render_template('cart.html', items=items, total=total, title="My Cart")
+
+@app.route('/clear_cart')
+def clear_cart():
+    session['cart'] = []
+    return redirect(url_for('cart'))
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -44,45 +81,5 @@ def delete(id):
     db.session.commit()
     return redirect(url_for('admin', password="2025"))
 
-@app.route('/buy/<int:id>')
-def buy(id):
-    p = Product.query.get_or_404(id)
-    return render_template('buy.html', product=p)
-
-@app.route('/checkout', methods=['POST'])
-def checkout():
-    name = request.form.get('name')
-    phone = request.form.get('phone')
-    address = request.form.get('address')
-    product_name = request.form.get('product_name')
-    
-    whatsapp_msg = f"https://wa.me/212607367119?text=طلب جديد:%0Aالاسم: {name}%0Aالهاتف: {phone}%0Aالعنوان: {address}%0Aالمنتج: {product_name}"
-    return redirect(whatsapp_msg)
-
-@app.route('/add_to_cart/<int:id>')
-def add_to_cart(id):
-    if 'cart' not in session:
-        session['cart'] = []
-    cart = session.get('cart', [])
-    cart.append(id)
-    session['cart'] = cart
-    session.modified = True
-    return redirect(url_for('index'))
-
-@app.route('/cart')
-def show_cart():
-    if 'cart' not in session or len(session['cart']) == 0:
-        return render_template('cart.html', items=[], total=0)
-    items = Product.query.filter(Product.id.in_(session['cart'])).all()
-    total = sum(item.price for item in items)
-    return render_template('cart.html', items=items, total=total)
-
-@app.route('/clear_cart')
-def clear_cart():
-    session.pop('cart', None)
-    return redirect(url_for('index'))
-
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
