@@ -6,7 +6,7 @@ app.secret_key = 'ismail_123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shop.db'
 db = SQLAlchemy(app)
 
-# Database model with affiliate_link support
+# Database model
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -15,11 +15,10 @@ class Product(db.Model):
     description = db.Column(db.String(500))
     affiliate_link = db.Column(db.String(500))
 
-# هاد السطر هو اللي كيصايب الجداول في Koyeb بلا ما يحتاج ملف .db خارجي
+# Create database tables automatically
 with app.app_context():
     db.create_all()
 
-# Initialize Shopping Cart in session
 @app.before_request
 def make_session_permanent():
     if 'cart' not in session:
@@ -30,12 +29,27 @@ def index():
     products = Product.query.all()
     return render_template('index.html', products=products, title="Home")
 
+# --- الجزء المعدل لحماية الـ Admin ---
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    if request.args.get('password') != "2025":
-        return redirect('/')
+    # كنشوفو واش الباسورد كاين فـ الرابط أو صيفطناه عبر فورم
+    entered_password = request.args.get('password') or request.form.get('password')
+    
+    if entered_password != "2025":
+        # إلا كان الباسورد غلط، كنعطيوه صفحة بسيطة يكتب فيها الكود
+        return '''
+            <div style="text-align: center; padding: 100px 20px; font-family: sans-serif; direction: ltr;">
+                <h2 style="color: #1a1a1a;">Admin Login</h2>
+                <form method="POST" style="display: inline-block; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <input type="password" name="password" placeholder="Enter Password" style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px; width: 200px;"><br>
+                    <button type="submit" style="background: #000; color: #fff; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer;">Login</button>
+                </form>
+                <p><a href="/" style="color: #666; text-decoration: none; font-size: 0.9rem;">Back to Store</a></p>
+            </div>
+        '''
 
-    if request.method == 'POST':
+    # إلا كان الباسورد صحيح، كنكملو الخدمة عادي
+    if request.method == 'POST' and 'name' in request.form:
         new_p = Product(
             name=request.form['name'],
             price=request.form['price'],
@@ -49,6 +63,7 @@ def admin():
         
     products = Product.query.all()
     return render_template('admin.html', products=products, title="Admin Panel")
+# --------------------------------------
 
 @app.route('/buy/<int:id>')
 def buy(id):
@@ -83,3 +98,4 @@ def delete(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
