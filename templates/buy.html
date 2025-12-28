@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Details - Ismaïl Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; text-align: center; padding: 40px 20px; margin: 0; }
+        .form-buy { background: white; max-width: 400px; margin: auto; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .product-img { width: 100%; height: 250px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; }
+        /* Style for the buy button */
+        .affiliate-btn { 
+            background: #ff9900; 
+            color: white; 
+            text-decoration: none; 
+            padding: 15px; 
+            width: 100%; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            transition: 0.3s; 
+            box-sizing: border-box;
+        }
+        .affiliate-btn:hover { background: #e68a00; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+    <div class="form-buy">
+        <img src="{{ product.image_url }}" class="product-img">
+        <h2 style="margin: 0; color: #1a1a1a;">Special Deal Found! 👕</h2>
+        <p style="margin: 5px 0; color: #666;">Product: <b>{{ product.name }}</b></p>
+        <p style="font-size: 1.4rem; color: #de0000; font-weight: 900; margin: 10px 0;">{{ product.price }} DH</p>
+        
+        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #de0000; margin: 20px 0; border-radius: 5px; text-align: left;">
+            <h4 style="margin: 0 0 5px 0; color: #1a1a1a;"><i class="fas fa-info-circle"></i> Product Description:</h4>
+            <p style="color: #555; line-height: 1.6; margin: 0; white-space: pre-wrap; font-size: 0.9rem;">{{ product.description }}</p>
+        </div>
+
+        <a href="{{ product.affiliate_link }}" target="_blank" class="affiliate-btn">
+            <i class="fas fa-shopping-cart"></i> Click Here to Buy
+        </a>
+        
+        <a href="/" style="display: block; margin-top: 20px; color: #999; text-decoration: none; font-size: 0.9rem;">← Back to Store</a>
+    </div>
+</body>
+</html>

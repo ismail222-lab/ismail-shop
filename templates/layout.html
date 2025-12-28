@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>ISMAIL SHOP - {{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="background: #f4f7f6; margin: 0; padding: 0; font-family: sans-serif;">
+
+    <header style="background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f1f1; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        
+        <h1 style="margin: 0; font-size: 1.8rem; font-weight: 800; color: #1a1a1a;">
+            <span style="color: #de0000;">ISMAIL</span><span style="color: #333;">SHOP</span>
+        </h1>
+
+        <nav style="display: flex; gap: 25px; align-items: center;">
+            <a href="/" style="color: #333; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-th-large" style="color: #de0000;"></i> Store
+            </a>
+            
+            <a href="/cart" style="color: #333; text-decoration: none; font-weight: 600; position: relative; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-shopping-bag" style="color: #de0000; font-size: 1.2rem;"></i> Cart
+                {% if session.get('cart') %}
+                    <span style="background: #de0000; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; position: absolute; top: -8px; right: -12px; font-weight: bold;">
+                        {{ session['cart']|length }}
+                    </span>
+                {% endif %}
+            </a>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="background: white; border-top: 1px solid #eee; padding: 40px 5% 20px; margin-top: 50px;">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; text-align: left;">
+            <div style="max-width: 300px;">
+                <h3 style="color: #1a1a1a;">ISMAIL <span style="color: #de0000;">SHOP</span></h3>
+                <p style="color: #666;">High quality and best prices in Morocco. We provide the latest models of electronics and lifestyle products.</p>
+            </div>
+
+            <div>
+                <h4 style="color: #1a1a1a;">Quick Links</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li><a href="/" style="color: #666; text-decoration: none; display: block; margin-bottom: 8px;">Home</a></li>
+                    <li><a href="/admin?password=2025" style="color: #666; text-decoration: none; display: block; margin-bottom: 8px;">Admin Panel</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 style="color: #1a1a1a;">Contact Us</h4>
+                <p style="color: #666; margin-bottom: 5px; direction: ltr; unicode-bidi: embed;">
+    <i class="fas fa-phone"></i> +212 607 367 119
+</p>
+                <p style="color: #666;"><i class="fas fa-envelope"></i> contact@ismailshop.com</p>
+                <div style="display: flex; gap: 15px; margin-top: 15px; font-size: 1.2rem;">
+                    <a href="https://www.instagram.com/ismail_.shop" style="color: #000000;"><i class="fab fa-instagram"></i></a>
+<a href="https://www.tiktok.com/سمية_بروفايلك" style="color: #000000;"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; color: #999; font-size: 0.9rem;">
+            <p>
+                &copy; 2025 All Rights Reserved to <strong>Ismail Shop</strong>
+                <a href="/admin?password=2025" style="color: inherit; text-decoration: none; cursor: default; margin-right: 5px;">.</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

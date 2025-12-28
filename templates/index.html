@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container" style="direction: ltr;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 20px 2%;">
+        {% for p in products %}
+        <div class="product-card" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; display: flex; flex-direction: column;">
+            
+            <div style="overflow: hidden;">
+                <img src="{{ p.image_url }}" style="width: 100%; height: 180px; object-fit: cover;">
+            </div>
+
+            <div style="padding: 10px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 0.9rem; color: #1a1a1a; font-weight: 700;">{{ p.name }}</h3>
+                <p style="color: #de0000; font-weight: 900; font-size: 1.1rem; margin: 8px 0;">{{ p.price }} DH</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="/buy/{{ p.id }}" style="background: #000000; color: white; padding: 8px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.8rem;">
+                        Buy Now
+                    </a>
+                    <a href="/add_to_cart/{{ p.id }}" style="background: #f8f9fa; color: #333; padding: 8px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid #eee; font-size: 0.8rem;">
+                        Add to Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
