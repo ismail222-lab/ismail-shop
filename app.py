@@ -5,17 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.secret_key = 'ismail_123'
 
-# التعديل السحري هنا: كنفرضوا على السيرفر يكتب فـ باريس
-db_folder = '/app/db'
-
-# إلا كنا فـ Koyeb، كنستعملو الخزنة، وإلا كنستعملو ملف محلي للتيست
 if os.environ.get('KOYEB_SERVICE_ID'):
-    if not os.path.exists(db_folder):
-        try:
-            os.makedirs(db_folder)
-        except:
-            pass
-    db_path = os.path.join(db_folder, 'shop.db')
+    db_path = '/tmp/shop.db'
 else:
     db_path = 'shop.db'
 
@@ -47,7 +38,6 @@ def index():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     entered_password = request.args.get('password') or request.form.get('password')
-    
     if entered_password != "2025":
         return '''
             <div style="text-align: center; padding: 100px 20px; font-family: sans-serif; direction: ltr;">
@@ -58,7 +48,6 @@ def admin():
                 </form>
             </div>
         '''
-
     if request.method == 'POST' and 'name' in request.form:
         new_p = Product(
             name=request.form['name'],
@@ -70,7 +59,6 @@ def admin():
         db.session.add(new_p)
         db.session.commit()
         return redirect(url_for('index'))
-        
     products = Product.query.all()
     return render_template('admin.html', products=products, title="Admin Panel")
 
@@ -88,6 +76,7 @@ def delete(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
