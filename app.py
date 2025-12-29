@@ -29,14 +29,11 @@ def index():
     products = Product.query.all()
     return render_template('index.html', products=products, title="Home")
 
-# --- الجزء المعدل لحماية الـ Admin ---
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    # كنشوفو واش الباسورد كاين فـ الرابط أو صيفطناه عبر فورم
     entered_password = request.args.get('password') or request.form.get('password')
     
     if entered_password != "2025":
-        # إلا كان الباسورد غلط، كنعطيوه صفحة بسيطة يكتب فيها الكود
         return '''
             <div style="text-align: center; padding: 100px 20px; font-family: sans-serif; direction: ltr;">
                 <h2 style="color: #1a1a1a;">Admin Login</h2>
@@ -48,7 +45,6 @@ def admin():
             </div>
         '''
 
-    # إلا كان الباسورد صحيح، كنكملو الخدمة عادي
     if request.method == 'POST' and 'name' in request.form:
         new_p = Product(
             name=request.form['name'],
@@ -59,11 +55,11 @@ def admin():
         )
         db.session.add(new_p)
         db.session.commit()
-        return redirect(url_for('admin', password="2025"))
+        # دبا غير تزيد السلعة غاترجع لـ Store وتلقى البرودوي بان
+        return redirect(url_for('index'))
         
     products = Product.query.all()
     return render_template('admin.html', products=products, title="Admin Panel")
-# --------------------------------------
 
 @app.route('/buy/<int:id>')
 def buy(id):
@@ -94,8 +90,9 @@ def delete(id):
     p = Product.query.get_or_404(id)
     db.session.delete(p)
     db.session.commit()
-    return redirect(url_for('admin', password="2025"))
+    return redirect(url_for('index')) # حتى هنا يرجعك للمتجر بعد المسح
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
