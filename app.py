@@ -1,12 +1,23 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = 'ismail_123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shop.db'
+
+db_folder = '/app/db'
+
+if os.path.exists(db_folder) or os.environ.get('KOYEB_SERVICE_ID'):
+    if not os.path.exists(db_folder):
+        os.makedirs(db_folder)
+    db_path = os.path.join(db_folder, 'shop.db')
+else:
+    db_path = 'shop.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Database model
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -15,7 +26,6 @@ class Product(db.Model):
     description = db.Column(db.String(500))
     affiliate_link = db.Column(db.String(500))
 
-# Create database tables automatically
 with app.app_context():
     db.create_all()
 
@@ -48,14 +58,13 @@ def admin():
     if request.method == 'POST' and 'name' in request.form:
         new_p = Product(
             name=request.form['name'],
-            price=request.form['price'],
+            price=float(request.form['price']),
             image_url=request.form['image_url'],
             description=request.form['description'],
             affiliate_link=request.form['affiliate_link']
         )
         db.session.add(new_p)
         db.session.commit()
-        # دبا غير تزيد السلعة غاترجع لـ Store وتلقى البرودوي بان
         return redirect(url_for('index'))
         
     products = Product.query.all()
@@ -90,9 +99,10 @@ def delete(id):
     p = Product.query.get_or_404(id)
     db.session.delete(p)
     db.session.commit()
-    return redirect(url_for('index')) # حتى هنا يرجعك للمتجر بعد المسح
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
