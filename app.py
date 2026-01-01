@@ -16,11 +16,11 @@ db = SQLAlchemy(app)
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(200))   
     price = db.Column(db.Float)
-    image_url = db.Column(db.String(200))
-    description = db.Column(db.String(500))
-    affiliate_link = db.Column(db.String(500))
+    image_url = db.Column(db.Text)
+    description = db.Column(db.Text)
+    affiliate_link = db.Column(db.Text)
 
 with app.app_context():
     db.create_all()
@@ -76,6 +76,7 @@ def delete(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
