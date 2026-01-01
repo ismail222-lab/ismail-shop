@@ -33,7 +33,7 @@ def make_session_permanent():
 @app.route('/')
 def index():
     products = Product.query.all()
-    return render_template('index.html', products=products, title="Home")
+    return render_template('index.html', products=products)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -76,6 +76,7 @@ def delete(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
